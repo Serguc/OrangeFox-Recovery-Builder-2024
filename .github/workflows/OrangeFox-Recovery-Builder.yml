@@ -14,7 +14,7 @@ on:
       DEVICE_TREE:
         description: 'Custom Recovery Tree'
         required: true
-        default: 'https://github.com/Serguc/recovery_device_Blackview_MEGA_3.git'
+        default: 'https://github.com/Serguc/android_device_Blackview_MEGA_3.git'
       DEVICE_TREE_BRANCH:
         description: 'Custom Recovery Tree Branch'
         required: true
