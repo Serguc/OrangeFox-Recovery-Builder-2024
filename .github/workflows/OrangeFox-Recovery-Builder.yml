@@ -50,7 +50,9 @@ on:
         type: boolean
         required: true
         default: true
-
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  
 jobs:
   build:
     name: Build OFRP by ${{ github.actor }}
@@ -63,6 +65,13 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+      with:
+          path: device/Blackview/MEGA_3
+          
+    - name: Setup Environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bc build-essential zip curl libc6-dev libncurses5-dev libssl-dev python3 python-is-python3      
 
     - name: Display Inputs
       run: |
@@ -78,7 +87,7 @@ jobs:
     - name: Swap Space
       uses: pierotofy/set-swap-space@master
       with:
-        swap-size-gb: 24
+        swap-size-gb: 32
       
     - name: Build Environment
       run: |
