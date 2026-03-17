@@ -67,12 +67,7 @@ jobs:
       uses: actions/checkout@v4
       with:
           path: device/Blackview/MEGA_3
-          
-    - name: Setup Environment
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y bc build-essential zip curl libc6-dev libncurses5-dev libssl-dev python3 python-is-python3      
-
+             
     - name: Display Inputs
       run: |
         echo "::group::User Environment Variables"
