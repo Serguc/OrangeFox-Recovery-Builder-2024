@@ -50,8 +50,6 @@ on:
         type: boolean
         required: true
         default: true
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   
 jobs:
   build:
@@ -65,8 +63,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-      with:
-          path: device/Blackview/MEGA_3
              
     - name: Display Inputs
       run: |
@@ -111,7 +107,7 @@ jobs:
         echo "COMMIT_ID=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
     - name: Check Manifest Branch
-      uses: haya14busa/action-cond@v1
+      uses: haya14busa/action-cond@v2
       id: fox_branch
       with:
         cond: ${{ github.event.inputs.MANIFEST_BRANCH == '11.0' || github.event.inputs.MANIFEST_BRANCH == '12.1' }}
