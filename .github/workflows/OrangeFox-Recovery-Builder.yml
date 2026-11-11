@@ -91,6 +91,9 @@ jobs:
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         export FOX_USE_TWRP_RECOVERY_IMAGE_BUILDER=1
+        # Отключаем сборку APEX и лишних сервисных фрагментов для рекавери
+        export DISABLE_ARTIFACT_PATH_REQUIREMENTS=true
+        export OVERRIDE_TARGET_FLATTEN_APEX=true
         
         lunch twrp_MEGA_3-bp1a-eng || lunch twrp_MEGA_3-ap2a-eng || lunch twrp_MEGA_3-eng
         mka ${{ github.event.inputs.BUILD_TARGET }}
