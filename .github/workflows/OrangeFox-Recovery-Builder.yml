@@ -1,4 +1,4 @@
-Name: OrangeFox
+name: OrangeFox
 
 on:
   workflow_dispatch:
