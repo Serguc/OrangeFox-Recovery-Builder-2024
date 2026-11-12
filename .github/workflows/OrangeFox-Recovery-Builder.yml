@@ -54,6 +54,14 @@ jobs:
 
     - name: Clean-up Environment
       uses: rokibhasansagar/slimhub_actions@main
+      
+    - name: Clear Excess Disk Space
+      run: |
+        sudo rm -rf /usr/share/dotnet
+        sudo rm -rf /opt/ghc
+        sudo rm -rf /usr/local/lib/android
+        docker system prune -f --all
+        df -h
 
     - name: Swap Space
       uses: pierotofy/set-swap-space@master
