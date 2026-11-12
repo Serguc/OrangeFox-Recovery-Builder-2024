@@ -91,10 +91,9 @@ jobs:
         rm -rf prebuilts/module_sdk/CrashRecovery
         
         sed -i '/minSdkVersion/d' packages/modules/common/build/allowed_deps.txt
-           # Принудительно объявляем недостающий атрибут SELinux, если файл существует
-        if [ -f system/sepolicy/vendor/hal_hwcrypto_default.te ]; then
-            sed -i '1i attribute hal_hwcrypto_server;' system/sepolicy/vendor/hal_hwcrypto_default.te
-        fi
+        # Создаем папку и файл политик SELinux, если их нет, и объявляем атрибут
+        mkdir -p system/sepolicy/vendor
+        echo "attribute hal_hwcrypto_server;" > system/sepolicy/vendor/hal_hwcrypto_default.te
         
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
