@@ -101,6 +101,10 @@ jobs:
         export OVERRIDE_TARGET_FLATTEN_APEX=true
         
         lunch twrp_MEGA_3-bp1a-eng || lunch twrp_MEGA_3-ap2a-eng || lunch twrp_MEGA_3-eng
+        # Внедряем объявление атрибута сразу после запуска lunch, когда все файлы sepolicy уже распакованы
+        if [ -f system/sepolicy/vendor/hal_hwcrypto_default.te ]; then
+            sed -i '1i attribute hal_hwcrypto_server;' system/sepolicy/vendor/hal_hwcrypto_default.te
+        fi
         mka ${{ github.event.inputs.BUILD_TARGET }}
 
     - name: Set Build Date
