@@ -89,10 +89,13 @@ jobs:
       run: |
         cd ${GITHUB_WORKSPACE}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}
         rm -rf prebuilts/module_sdk/CrashRecovery
+        
         sed -i '/minSdkVersion/d' packages/modules/common/build/allowed_deps.txt
-        # Добавляем объявление атрибута для SELinux
-        echo "attribute hal_hwcrypto_server;" >> system/sepolicy/private/attribute_vectors || true
-        # Или патчим файл напрямую, если он создается
+           # Принудительно объявляем недостающий атрибут SELinux, если файл существует
+        if [ -f system/sepolicy/vendor/hal_hwcrypto_default.te ]; then
+            sed -i '1i attribute hal_hwcrypto_server;' system/sepolicy/vendor/hal_hwcrypto_default.te
+        fi
+        
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         export FOX_USE_TWRP_RECOVERY_IMAGE_BUILDER=1
