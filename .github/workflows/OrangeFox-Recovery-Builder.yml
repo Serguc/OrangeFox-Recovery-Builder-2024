@@ -85,7 +85,7 @@ jobs:
         cd device/Blackview/MEGA_3
         echo "COMMIT_ID=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
         
-        - name: Building OrangeFox
+    - name: Building OrangeFox
       run: |
         cd ${GITHUB_WORKSPACE}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}
         rm -rf prebuilts/module_sdk/CrashRecovery
@@ -101,7 +101,6 @@ jobs:
         
         lunch twrp_MEGA_3-bp1a-eng || lunch twrp_MEGA_3-ap2a-eng || lunch twrp_MEGA_3-eng
         
-        # Теперь, когда окружение инициализировано и файлы распакованы, патчим SELinux гарантированно
         mkdir -p system/sepolicy/vendor
         if [ ! -f system/sepolicy/vendor/hal_hwcrypto_default.te ]; then
             echo "typeattribute hal_hwcrypto_default hal_hwcrypto_server;" > system/sepolicy/vendor/hal_hwcrypto_default.te
