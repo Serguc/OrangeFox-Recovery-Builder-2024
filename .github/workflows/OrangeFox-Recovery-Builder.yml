@@ -117,10 +117,11 @@ jobs:
         lunch twrp_MEGA_3-bp1a-eng || lunch twrp_MEGA_3-ap2a-eng || lunch twrp_MEGA_3-eng
         
         mkdir -p system/sepolicy/vendor
-        # Исправлено: объявляем именно тот атрибут, на отсутствие которого ругался компилятор
-        if [ ! -f system/sepolicy/vendor/hal_hwcrypto.te ]; then
-            echo "attribute hal_hwcrypto;" > system/sepolicy/vendor/hal_hwcrypto.te
-        fi
+        cat <<EOF > system/sepolicy/vendor/hal_hwcrypto.te
+        attribute hal_hwcrypto;
+        attribute hal_hwcrypto_server;
+        typeattribute hal_hwcrypto_default hal_hwcrypto_server;
+        EOF
         
         mka ${{ github.event.inputs.BUILD_TARGET }}
 
