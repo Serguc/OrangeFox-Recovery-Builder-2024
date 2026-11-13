@@ -60,7 +60,9 @@ jobs:
         sudo rm -rf /usr/share/dotnet
         sudo rm -rf /opt/ghc
         sudo rm -rf /usr/local/lib/android
-        docker system prune -f --all
+        if command -v docker &> /dev/null; then
+          docker system prune -f --all
+        fi
         df -h
 
     - name: Swap Space
