@@ -67,12 +67,14 @@ jobs:
 
     - name: Set up Swap Space
       run: |
+        sudo swapoff /swapfile || true
+        sudo rm -f /swapfile
         sudo fallocate -l 16G /swapfile
         sudo chmod 600 /swapfile
         sudo mkswap /swapfile
         sudo swapon /swapfile
         free -h
-
+        
     - name: Setup Build Environment
       run: |
         sudo apt update
