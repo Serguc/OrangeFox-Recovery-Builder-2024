@@ -115,14 +115,6 @@ jobs:
         export RECOVERY_SDK_VERSION=34
         
         lunch twrp_MEGA_3-bp1a-eng || lunch twrp_MEGA_3-ap2a-eng || lunch twrp_MEGA_3-eng
-        
-        mkdir -p system/sepolicy/vendor
-        cat <<EOF > system/sepolicy/vendor/hal_hwcrypto.te
-        attribute hal_hwcrypto;
-        attribute hal_hwcrypto_server;
-        typeattribute hal_hwcrypto_default hal_hwcrypto_server;
-        EOF
-        
         mka ${{ github.event.inputs.BUILD_TARGET }}
 
     - name: Set Build Date
