@@ -105,16 +105,12 @@ jobs:
         TARGET_FILE="${GITHUB_WORKSPACE}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}/system/sepolicy/vendor/hal_hwcrypto_default.te"
         if [ -f "$TARGET_FILE" ]; then
           echo "Found hal_hwcrypto_default.te, applying patch..."
-          # Проверяем, нет ли уже объявления, чтобы не задублировать
-          if ! grep -q "attribute hal_hwcrypto_server;" "$TARGET_FILE"; then
-            sed -i '1i attribute hal_hwcrypto_server;' "$TARGET_FILE"
-            echo "Patch applied successfully."
-          else
-            echo "Attribute already exists."
-          fi
+          # Объявляем оба недостающих атрибута в самом начале файла
+          sed -i '1i attribute hal_hwcrypto_server;\nattribute hal_hwcrypto;' "$TARGET_FILE"
+          echo "Patch applied successfully."
         else
           echo "Target file not found at $TARGET_FILE"
-        fi  
+        fi
         
     - name: Building OrangeFox
       run: |
