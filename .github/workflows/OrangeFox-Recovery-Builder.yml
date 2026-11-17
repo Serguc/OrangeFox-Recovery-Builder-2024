@@ -125,10 +125,9 @@ jobs:
         export DISABLE_ARTIFACT_PATH_REQUIREMENTS=true
         export OVERRIDE_TARGET_FLATTEN_APEX=true
         export BOARD_SEPOLICY_DISABLED=true
-        export RECOVERY_SDK_VERSION=34
         
         lunch twrp_${{ github.event.inputs.DEVICE_NAME }}-bp1a-eng || lunch twrp_${{ github.event.inputs.DEVICE_NAME }}-ap2a-eng || lunch twrp_${{ github.event.inputs.DEVICE_NAME }}-eng
-        mka ${{ github.event.inputs.BUILD_TARGET }} -j2
+        mka ${{ github.event.inputs.BUILD_TARGET }} -j1
 
 
     - name: Set Build Date
