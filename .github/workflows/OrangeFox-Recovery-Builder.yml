@@ -99,6 +99,22 @@ jobs:
         git clone ${{ github.event.inputs.DEVICE_TREE }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ${{ github.event.inputs.DEVICE_PATH }}
         cd ${{ github.event.inputs.DEVICE_PATH }}
         echo "COMMIT_ID=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+    - name: Permanent Patch for hwcrypto policy
+      run: |
+        TARGET_FILE="${GITHUB_WORKSPACE}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}/system/sepolicy/vendor/hal_hwcrypto_default.te"
+        if [ -f "$TARGET_FILE" ]; then
+          echo "Found hal_hwcrypto_default.te, applying patch..."
+          # Проверяем, нет ли уже объявления, чтобы не задублировать
+          if ! grep -q "attribute hal_hwcrypto_server;" "$TARGET_FILE"; then
+            sed -i '1i attribute hal_hwcrypto_server;' "$TARGET_FILE"
+            echo "Patch applied successfully."
+          else
+            echo "Attribute already exists."
+          fi
+        else
+          echo "Target file not found at $TARGET_FILE"
+        fi  
         
     - name: Building OrangeFox
       run: |
