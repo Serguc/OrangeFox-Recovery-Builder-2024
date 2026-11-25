@@ -15,7 +15,7 @@ on:
       DEVICE_TREE:
         description: 'Custom Recovery Tree'
         required: true
-        default: 'https://github.com/Serguc/android_device_Blackview_MEGA_3.git'
+        default: 'https://github.com/Serguc/recovery_device_Blackview_MEGA_3.git'
       DEVICE_TREE_BRANCH:
         description: 'Custom Recovery Tree Branch'
         required: true
@@ -51,9 +51,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Clean-up Environment
-      uses: rokibhasansagar/slimhub_actions@main
-
     - name: Swap Space
       uses: pierotofy/set-swap-space@master
       with:
@@ -62,75 +59,63 @@ jobs:
     - name: Setup Build Environment
       run: |
         sudo apt update
-        sudo apt -y upgrade
         git clone https://gitlab.com/OrangeFox/misc/scripts
         cd scripts
         sudo bash setup/android_build_env.sh
 
     - name: Set-up Manifest & Sync
       run: |
-        mkdir -p ${GITHUB_WORKSPACE}/OrangeFox
-        cd ${GITHUB_WORKSPACE}/OrangeFox
+        mkdir -p "${GITHUB_WORKSPACE}/OrangeFox"
+        cd "${GITHUB_WORKSPACE}/OrangeFox"
         git config --global user.name "Serguc"
         git config --global user.email "Haritonov014@gmail.com"
         git clone https://gitlab.com/OrangeFox/sync.git
         cd sync
-        ./orangefox_sync.sh --branch ${{ github.event.inputs.MANIFEST_BRANCH }} --path ${GITHUB_WORKSPACE}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}
+        ./orangefox_sync.sh --branch "${{ github.event.inputs.MANIFEST_BRANCH }}" --path "${GITHUB_WORKSPACE}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}"
 
     - name: Clone Device Tree
       run: |
-        cd ${GITHUB_WORKSPACE}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}
-        git clone https://github.com/Serguc/recovery_device_Blackview_MEGA_3.git -b fox_14.1 device/Blackview/MEGA_3
-        cd device/Blackview/MEGA_3
-        echo "COMMIT_ID=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-        
+        cd "${GITHUB_WORKSPACE}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}"
+        rm -rf "${{ github.event.inputs.DEVICE_PATH }}"
+        git clone "${{ github.event.inputs.DEVICE_TREE }}" -b "${{ github.event.inputs.DEVICE_TREE_BRANCH }}" "${{ github.event.inputs.DEVICE_PATH }}"
+        cd "${{ github.event.inputs.DEVICE_PATH }}"
+        echo "COMMIT_ID=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
+
     - name: Building OrangeFox
       run: |
-        cd ${GITHUB_WORKSPACE}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}
+        cd "${GITHUB_WORKSPACE}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}"
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         export FOX_USE_TWRP_RECOVERY_IMAGE_BUILDER=1
-        
-        lunch twrp_${{ github.event.inputs.DEVICE_NAME }}-eng
-        mka ${{ github.event.inputs.BUILD_TARGET }}
+
+        lunch "twrp_${{ github.event.inputs.DEVICE_NAME }}-ap2a-eng"
+        mka "${{ github.event.inputs.BUILD_TARGET }}"
 
     - name: Set Build Date
-      run: echo "BUILD_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
+      run: echo "BUILD_DATE=$(date +\%Y\%m\%d)" >> "$GITHUB_ENV"
 
     - name: Check Output & Prepare Release
       run: |
         OUT_DIR="${GITHUB_WORKSPACE}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}/out/target/product/${{ github.event.inputs.DEVICE_NAME }}"
-        cd $OUT_DIR
-        
+        cd "$OUT_DIR"
+
         if [ -f vendor_boot.img ]; then
-            echo "CHECK_IMG_IS_OK=true" >> $GITHUB_ENV
-            echo "FILE_PATH=${OUT_DIR}" >> $GITHUB_ENV
-            echo "FILE_NAME=vendor_boot.img" >> $GITHUB_ENV
+            echo "CHECK_IMG_IS_OK=true" >> "$GITHUB_ENV"
+            echo "FILE_PATH=${OUT_DIR}" >> "$GITHUB_ENV"
+            echo "FILE_NAME=vendor_boot.img" >> "$GITHUB_ENV"
         elif [ -f recovery.img ]; then
-            echo "CHECK_IMG_IS_OK=true" >> $GITHUB_ENV
-            echo "FILE_PATH=${OUT_DIR}" >> $GITHUB_ENV
-            echo "FILE_NAME=recovery.img" >> $GITHUB_ENV
-        elif [ -f OrangeFox*.img ]; then
-            echo "CHECK_IMG_IS_OK=true" >> $GITHUB_ENV
-            echo "FILE_PATH=${OUT_DIR}" >> $GITHUB_ENV
-            echo "FILE_NAME=$(ls OrangeFox*.img | head -n 1)" >> $GITHUB_ENV
+            echo "CHECK_IMG_IS_OK=true" >> "$GITHUB_ENV"
+            echo "FILE_PATH=${OUT_DIR}" >> "$GITHUB_ENV"
+            echo "FILE_NAME=recovery.img" >> "$GITHUB_ENV"
+        elif ls OrangeFox*.img 1>/dev/null 2>&1; then
+            IMG_FOUND=$(ls OrangeFox*.img | head -n 1)
+            echo "CHECK_IMG_IS_OK=true" >> "$GITHUB_ENV"
+            echo "FILE_PATH=${OUT_DIR}" >> "$GITHUB_ENV"
+            echo "FILE_NAME=${IMG_FOUND}" >> "$GITHUB_ENV"
         else
             echo "ERROR: Output image file not found!"
             exit 1
         fi
 
-    - name: Upload to Release
-      if: env.CHECK_IMG_IS_OK == 'true'
-      uses: softprops/action-gh-release@v1
-      with:
-        files: |
-          ${{ env.FILE_PATH }}/${{ env.FILE_NAME }}
-          ${{ env.FILE_PATH }}/OrangeFox*.zip
-        name: Unofficial OrangeFox for ${{ github.event.inputs.DEVICE_NAME }} (${{ env.BUILD_DATE }})
-        tag_name: build_${{ github.run_id }}
-        body: |
-          ### OrangeFox Recovery Build
-          * **Device:** Blackview MEGA 3 (`${{ github.event.inputs.DEVICE_NAME }}`)
-          * **Target Image:** `${{ env.FILE_NAME }}`
-          * **Tree Commit:** `${{ env.COMMIT_ID }}`
-          
+        if ls OrangeFox*.zip 1>/
+        
