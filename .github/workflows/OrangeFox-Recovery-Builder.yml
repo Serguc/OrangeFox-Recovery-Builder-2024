@@ -48,6 +48,11 @@ jobs:
     permissions:
       contents: write
     steps:
+    - name: Check disk space
+      run: |
+            df -h
+            du -sh /home/runner/actions-runner/* ~/ /tmp 2>/dev/null | sort -h
+
     - name: Checkout
       uses: actions/checkout@v4
 
