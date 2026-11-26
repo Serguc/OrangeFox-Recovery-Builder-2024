@@ -53,6 +53,11 @@ jobs:
             df -h
             du -sh /home/runner/actions-runner/* ~/ /tmp 2>/dev/null | sort -h
 
+    - name: Swap Space
+      uses: pierotofy/set-swap-space@master
+      with:
+        swap-size-gb : 4
+
     - name: Checkout
       uses: actions/checkout@v4
 
@@ -80,11 +85,6 @@ jobs:
         git clone "${{ github.event.inputs.DEVICE_TREE }}" -b "${{ github.event.inputs.DEVICE_TREE_BRANCH }}" "${{ github.event.inputs.DEVICE_PATH }}"
         cd "${{ github.event.inputs.DEVICE_PATH }}"
         echo "COMMIT_ID=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
-
-        - name: Swap Space
-        uses: pierotofy/set-swap-space@master
-        with:
-        swap-size-gb : 4
 
     - name: Building OrangeFox
       run: |
