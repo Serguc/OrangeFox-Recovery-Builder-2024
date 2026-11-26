@@ -50,13 +50,13 @@ jobs:
     steps:
     - name: Check disk space
       run: |
-            df -h
-            du -sh /home/runner/actions-runner/* ~/ /tmp 2>/dev/null | sort -h
+        df -h
+        du -sh /home/runner/actions-runner/* ~/ /tmp 2>/dev/null | sort -h
 
     - name: Swap Space
       uses: pierotofy/set-swap-space@master
       with:
-        swap-size-gb : 4
+        swap-size-gb: 8
 
     - name: Checkout
       uses: actions/checkout@v4
@@ -67,6 +67,8 @@ jobs:
         git clone https://gitlab.com/OrangeFox/misc/scripts
         cd scripts
         sudo bash setup/android_build_env.sh
+        sudo apt-get clean
+        sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost /usr/local/lib/android /mnt/* 2>/dev/null || true
 
     - name: Set-up Manifest & Sync
       run: |
@@ -89,15 +91,18 @@ jobs:
     - name: Building OrangeFox
       run: |
         cd "${GITHUB_WORKSPACE}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}"
+        free -h
+        df -h
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         export FOX_USE_TWRP_RECOVERY_IMAGE_BUILDER=1
+        export NINJA_ARGS="-j4"
 
         lunch "twrp_${{ github.event.inputs.DEVICE_NAME }}-ap2a-eng"
-        mka "${{ github.event.inputs.BUILD_TARGET }}"
+        mka -j4 "${{ github.event.inputs.BUILD_TARGET }}"
 
     - name: Set Build Date
-      run: echo "BUILD_DATE=$(date +\%Y\%m\%d)" >> "$GITHUB_ENV"
+      run: echo "BUILD_DATE=$(date +%Y%m%d)" >> "$GITHUB_ENV"
 
     - name: Check Output & Prepare Release
       run: |
@@ -122,5 +127,23 @@ jobs:
             exit 1
         fi
 
-        if ls OrangeFox*.zip 1>/
-        
+        if ls OrangeFox*.zip 1>/dev/null 2>&1; then
+            ZIP_FOUND=$(ls OrangeFox*.zip | head -n 1)
+            printf "%s\n%s\n" "${OUT_DIR}/${FILE_NAME}" "${OUT_DIR}/${ZIP_FOUND}" > "${RUNNER_TEMP}/release_files.txt"
+        else
+            printf "%s\n" "${OUT_DIR}/${FILE_NAME}" > "${RUNNER_TEMP}/release_files.txt"
+        fi
+
+    - name: Upload to Release
+      if: env.CHECK_IMG_IS_OK == 'true'
+      uses: softprops/action-gh-release@v1
+      with:
+        files_from_file: ${{ runner.temp }}/release_files.txt
+        name: Unofficial OrangeFox for ${{ github.event.inputs.DEVICE_NAME }} (${{ env.BUILD_DATE }})
+        tag_name: build_${{ github.run_id }}
+        body: |
+     ### OrangeFox Recovery Build
+        * **Device:** Blackview MEGA 3 (`${{ github.event.inputs.DEVICE_NAME }}`)
+        * **Target Image:** `${{ env.FILE_NAME }}`
+        * **Tree Commit:** `${{ env.COMMIT_ID
+    
