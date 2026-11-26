@@ -142,9 +142,7 @@ jobs:
         name: Unofficial OrangeFox for ${{ github.event.inputs.DEVICE_NAME }} (${{ env.BUILD_DATE }})
         tag_name: build_${{ github.run_id }}
         body: |
-        
-      ### OrangeFox Recovery Build
-        * **Device:** Blackview MEGA 3 (`${{ github.event.inputs.DEVICE_NAME }}`)
-        * **Target Image:** `${{ env.FILE_NAME }}`
-        * **Tree Commit:** `${{ env.COMMIT_ID
-    
+          ### OrangeFox Recovery Build
+          * **Device:** Blackview MEGA 3 (`${{ github.event.inputs.DEVICE_NAME }}`)
+          * **Target Image:** `${{ env.FILE_NAME }}`
+          * **Tree Commit:** `${{ env.COMMIT_ID }}`
