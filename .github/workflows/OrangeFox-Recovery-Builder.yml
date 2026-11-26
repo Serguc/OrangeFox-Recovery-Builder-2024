@@ -82,8 +82,8 @@ jobs:
         echo "COMMIT_ID=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
 
         - name: Swap Space
-      uses: pierotofy/set-swap-space@master
-      with:
+        uses: pierotofy/set-swap-space@master
+        with:
         swap-size-gb : 4
 
     - name: Building OrangeFox
