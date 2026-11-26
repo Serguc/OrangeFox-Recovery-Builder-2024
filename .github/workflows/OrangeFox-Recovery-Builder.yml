@@ -81,6 +81,11 @@ jobs:
         cd "${{ github.event.inputs.DEVICE_PATH }}"
         echo "COMMIT_ID=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
 
+        - name: Swap Space
+      uses: pierotofy/set-swap-space@master
+      with:
+        swap-size-gb : 4
+
     - name: Building OrangeFox
       run: |
         cd "${GITHUB_WORKSPACE}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}"
@@ -90,11 +95,6 @@ jobs:
 
         lunch "twrp_${{ github.event.inputs.DEVICE_NAME }}-ap2a-eng"
         mka "${{ github.event.inputs.BUILD_TARGET }}"
-
-    - name: Swap Space
-      uses: pierotofy/set-swap-space@master
-      with:
-        swap-size-gb:
 
     - name: Set Build Date
       run: echo "BUILD_DATE=$(date +\%Y\%m\%d)" >> "$GITHUB_ENV"
