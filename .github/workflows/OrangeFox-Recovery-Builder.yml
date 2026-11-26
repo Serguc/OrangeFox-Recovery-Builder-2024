@@ -99,7 +99,7 @@ jobs:
         export NINJA_ARGS="-j4"
 
         lunch "twrp_${{ github.event.inputs.DEVICE_NAME }}-ap2a-eng"
-        mka -j4 "${{ github.event.inputs.BUILD_TARGET }}"
+        mka с -j4 "${{ github.event.inputs.BUILD_TARGET }}"
 
     - name: Set Build Date
       run: echo "BUILD_DATE=$(date +%Y%m%d)" >> "$GITHUB_ENV"
